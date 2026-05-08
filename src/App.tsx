@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Heart, 
@@ -26,6 +26,21 @@ export default function App() {
 
   const currentQuestion = quizData[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+
+  useEffect(() => {
+    // Track ViewContent on load
+    if (typeof (window as any).fbq === 'function') {
+      (window as any).fbq('track', 'ViewContent');
+    }
+  }, []);
+
+  const handleWaClick = () => {
+    if (typeof (window as any).fbq === 'function') {
+      // Track standard Lead event and Custom Conversion event
+      (window as any).fbq('track', 'Lead');
+      (window as any).fbq('trackCustom', 'Lead WA');
+    }
+  };
 
   const startQuiz = () => {
     setGameState('quiz');
@@ -259,6 +274,7 @@ export default function App() {
                     Berhenti tebak-tebakan sendiri! Dapatkan <strong>KONSULTASI GRATIS</strong> bersama Spesialis Gizi Kami sekarang juga. 
                   </p>
                   <motion.a 
+                    onClick={handleWaClick}
                     animate={{ rotate: [-1.5, 1.5, -1.5], scale: [1, 1.03, 1] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     href="https://wa.me/6282323360606?text=Halo%20Alunna,%20saya%20mau%20konsultasi%20gratis%20soal%20GTM%20si%20kecil" 
