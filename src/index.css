@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-brand-cream: #FFFAF0;
+  --color-brand-apricot: #FFCC99;
+  --color-brand-peach: #FFAD84;
+  --color-brand-sage: #B4D6C1;
+  --color-brand-mint: #E8F6F3;
+  --color-brand-rose: #FFD1DC;
+}
+
+body {
+  @apply bg-brand-cream text-slate-800 antialiased;
+}
+
+.glass-card {
+  @apply bg-white/80 backdrop-blur-sm border-2 border-brand-apricot/30 rounded-[32px] shadow-xl shadow-brand-apricot/10;
+}
+
+.primary-btn {
+  @apply bg-brand-peach hover:bg-brand-peach/90 text-white font-semibold py-4 px-8 rounded-2xl transition-all active:scale-95 shadow-lg shadow-brand-peach/20 disabled:opacity-50;
+}
+
+.secondary-btn {
+  @apply border-2 border-brand-apricot text-brand-peach font-semibold py-4 px-8 rounded-2xl transition-all hover:bg-brand-mint/50 active:scale-95;
+}
+
+.option-btn {
+  @apply w-full text-left p-5 rounded-2xl border-2 border-brand-rose transition-all flex items-center gap-4 hover:bg-brand-rose/10 active:scale-[0.98];
+}
+
+.option-btn-selected {
+  @apply border-brand-peach bg-brand-rose/20 ring-2 ring-brand-peach/50;
+}
+
+.option-btn-correct {
+  @apply border-emerald-400 bg-emerald-50 text-emerald-700;
+}
+
+.option-btn-wrong {
+  @apply border-rose-400 bg-rose-50 text-rose-700;
+}
