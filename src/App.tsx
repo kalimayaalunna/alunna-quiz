@@ -91,7 +91,7 @@ export default function App() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={startQuiz} 
-                className="primary-btn text-xl inline-flex items-center justify-center gap-3 cursor-pointer py-6 group relative overflow-hidden"
+                className="primary-btn !bg-[#E67E5D] text-xl inline-flex items-center justify-center gap-3 cursor-pointer py-6 group relative overflow-hidden"
               >
                 <span className="relative z-10">Mulai Curhat & Cari Solusi</span>
                 <ChevronRight size={24} className="relative z-10 group-hover:translate-x-2 transition-transform" />
@@ -258,8 +258,10 @@ export default function App() {
                   <p className="mb-4 text-sm md:text-base">
                     Berhenti tebak-tebakan sendiri! Dapatkan <strong>KONSULTASI GRATIS</strong> bersama Spesialis Gizi Kami sekarang juga. 
                   </p>
-                  <a 
-                    href="https://wa.me/6281234567890?text=Halo%20Alunna,%20saya%20sudah%20mengisi%20kuis%20dan%20ingin%20Konsultasi%20Gratis%20seputar%20GTM" 
+                  <motion.a 
+                    animate={{ rotate: [-1.5, 1.5, -1.5], scale: [1, 1.03, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    href="https://wa.me/6282323360606?text=Halo%20Alunna,%20saya%20mau%20konsultasi%20gratis%20soal%20GTM%20si%20kecil" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold p-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3 no-underline leading-tight"
@@ -268,7 +270,7 @@ export default function App() {
                     <span className="text-left text-sm md:text-base">
                       CHAT WA <br/> KLAIM KONSULTASI GRATIS
                     </span>
-                  </a>
+                  </motion.a>
                 </div>
               </div>
 
@@ -282,15 +284,17 @@ export default function App() {
                     <p>📅 <strong>Hanya Sampai 28 Mei</strong></p>
                   </div>
                   
-                  <a 
+                  <motion.a 
+                    animate={{ rotate: [1.5, -1.5, 1.5], scale: [1, 1.03, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                     href="https://www.google.com/maps/place/IKEA+Jakarta+Garden+City/@-6.1710064,106.9532439,17z/data=!3m1!4b1!4m6!3m5!1s0x2e698b4589e3470f:0x1b65d1f70f636ba3!8m2!3d-6.1710064!4d106.9532439!16s%2Fg%2F11mvlq08tz?entry=ttu&g_ep=EgoyMDI2MDUwMi4wIKXMDSoASAFQAw%3D%3D"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-3 bg-brand-sage hover:bg-emerald-500 hover:scale-[1.02] text-white font-bold py-4 rounded-2xl no-underline transition-all shadow-md active:scale-95 group"
+                    className="w-full inline-flex items-center justify-center gap-3 bg-emerald-800 hover:bg-emerald-900 hover:scale-[1.02] text-white font-bold py-4 rounded-2xl no-underline transition-all shadow-md active:scale-95 group"
                   >
                     <MapPin size={22} className="group-hover:animate-bounce transition-all" /> 
                     <span>Lihat Rute di Google Maps</span>
-                  </a>
+                  </motion.a>
 
                   <p className="text-xs text-slate-500 italic">
                     Yuk Bun, cobain rasa Selai Kurma Alunna yang kid-approved!
