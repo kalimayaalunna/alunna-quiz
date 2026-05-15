@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { quizData } from './data/quizData';
 
-type QuizState = 'landing' | 'quiz' | 'result';
+type QuizState = 'landing' | 'quiz' | 'form' | 'result';
 
 export default function App() {
   const [gameState, setGameState] = useState<QuizState>('landing');
@@ -23,6 +23,10 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+  
+  // New State
+  const [formData, setFormData] = useState({ name: '', wa: '' });
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const currentQuestion = quizData[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
@@ -34,9 +38,19 @@ export default function App() {
     }
   }, []);
 
+  // Effect for Popup
+  useEffect(() => {
+    let timer: any;
+    if (gameState === 'result') {
+      timer = setTimeout(() => {
+        setIsPopupOpen(true);
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [gameState]);
+
   const handleWaClick = () => {
     if (typeof (window as any).fbq === 'function') {
-      // Track standard Lead event and Custom Conversion event
       (window as any).fbq('track', 'Lead');
       (window as any).fbq('trackCustom', 'Lead WA');
     }
@@ -55,8 +69,6 @@ export default function App() {
     if (isAnswerRevealed) return;
     setSelectedOption(index);
     setIsAnswerRevealed(true);
-    // Score doesn't really matter in this diagnostic version, 
-    // but we can increment it to track completion if we want.
     setScore(score + 1);
   };
 
@@ -67,8 +79,17 @@ export default function App() {
       setSelectedOption(null);
       setIsAnswerRevealed(false);
     } else {
-      setGameState('result');
+      setGameState('form');
     }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // To send to email, you normally use a backend or service like Formspree.
+    // For now, we simulate the submission and move to results.
+    console.log('Form Submitted to kalimayaalunnaindonesia@gmail.com:', formData);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setGameState('result');
   };
 
   return (
@@ -219,106 +240,212 @@ export default function App() {
           </motion.div>
         )}
 
-        {gameState === 'result' && (
+        {gameState === 'form' && (
           <motion.div
-            key="result"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="glass-card max-w-3xl w-full p-8 md:p-12 text-center"
+            key="form"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            className="glass-card max-w-xl w-full p-8 md:p-12"
           >
-            <div className="relative inline-block mb-6">
-               <div className="absolute -inset-4 bg-brand-rose/30 blur-2xl rounded-full" />
-               <div className="relative bg-white rounded-full p-6 shadow-xl border-4 border-brand-apricot">
-                  <Heart className="w-16 h-16 text-brand-peach animate-pulse fill-brand-peach" />
-               </div>
-            </div>
-            
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4 px-4">
-              Bunda... Tarik Napas Dulu... <br/> Kamu Ibu yang Hebat! ❤️
-            </h2>
-            
-            <div className="text-left space-y-6 mb-10 text-slate-700 leading-relaxed">
-              <p className="bg-brand-mint/30 p-6 rounded-3xl border-2 border-brand-mint italic">
-                "Dari jawaban Bunda, kami tahu betul bahwa menghadapi anak GTM itu sangat menguras fisik dan emosi. 
-                Perasaan sedih, khawatir BB anak seret, hingga takut nutrisinya tidak tercukupi adalah hal yang sangat wajar. 
-                Bunda tidak sendirian, dan Bunda berhak mendapatkan bantuan yang tepat."
-              </p>
-
-              <p>
-                GTM sering kali terjadi karena anak bosan, tumbuh gigi, atau butuh eksplorasi rasa baru yang enak namun tetap padat gizi. 
-                Jangan biarkan stres ini berlarut-larut ya, Bun!
-              </p>
-
-              <div className="glass-card p-6 border-brand-apricot border-2 bg-brand-cream/50 overflow-hidden">
-                <h3 className="text-xl font-bold text-brand-peach flex items-center gap-2 mb-4">
-                  <Sparkles size={24} /> Kami Punya Solusi Tepat:
-                </h3>
-                
-                <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border-2 border-white">
-                  <img 
-                    src="https://alunna.id/wp-content/uploads/2026/04/selai-kurma-variant.webp" 
-                    alt="Selai Kurma Alunna Variant" 
-                    referrerPolicy="no-referrer"
-                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-
-                <p className="mb-4">
-                  Kenalkan, <strong>Selai Kurma MPASI dari Alunna!</strong> Terbuat dari bahan alami yang manisnya pas, lezat, dan bernutrisi tinggi untuk bantu boost nafsu makan dan lengkapi gizi si Kecil.
-                </p>
-                
-                <div className="bg-white p-6 rounded-2xl border-l-4 border-brand-peach shadow-sm">
-                  <h4 className="font-bold text-brand-peach mb-2 uppercase text-sm tracking-wide">🎁 SPESIAL UNTUK BUNDA HARI INI:</h4>
-                  <p className="mb-4 text-sm md:text-base">
-                    Berhenti tebak-tebakan sendiri! Dapatkan <strong>KONSULTASI GRATIS</strong> bersama Spesialis Gizi Kami sekarang juga. 
-                  </p>
-                  <motion.a 
-                    onClick={handleWaClick}
-                    animate={{ rotate: [-1.5, 1.5, -1.5], scale: [1, 1.03, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    href="https://wa.me/6282323360606?text=Halo%20Alunna,%20saya%20mau%20konsultasi%20gratis%20soal%20GTM%20si%20kecil" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold p-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3 no-underline leading-tight"
-                  >
-                    <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current flex-shrink-0" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                    <span className="text-left text-sm md:text-base">
-                      CHAT WA <br/> KLAIM KONSULTASI GRATIS
-                    </span>
-                  </motion.a>
-                </div>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center p-3 bg-brand-rose/20 rounded-full mb-4">
+                <Heart className="text-brand-peach w-6 h-6" />
               </div>
-
-              <div className="bg-brand-rose/20 p-6 rounded-3xl border-2 border-brand-rose/30">
-                <h3 className="font-bold text-slate-800 flex items-center gap-2 mb-3">
-                  <Utensils size={20} className="text-brand-peach" /> Mampir ke Booth Kami, Bun!
-                </h3>
-                <div className="space-y-4">
-                  <div className="text-sm md:text-base space-y-1">
-                    <p>📍 <strong>IKEA Garden City, Jakarta Timur</strong></p>
-                    <p>📅 <strong>Hanya Sampai 28 Mei</strong></p>
-                  </div>
-                  
-                  <motion.a 
-                    animate={{ rotate: [1.5, -1.5, 1.5], scale: [1, 1.03, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                    href="https://www.google.com/maps/place/IKEA+Jakarta+Garden+City/@-6.1710064,106.9532439,17z/data=!3m1!4b1!4m6!3m5!1s0x2e698b4589e3470f:0x1b65d1f70f636ba3!8m2!3d-6.1710064!4d106.9532439!16s%2Fg%2F11mvlq08tz?entry=ttu&g_ep=EgoyMDI2MDUwMi4wIKXMDSoASAFQAw%3D%3D"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-3 bg-emerald-800 hover:bg-emerald-900 hover:scale-[1.02] text-white font-bold py-4 rounded-2xl no-underline transition-all shadow-md active:scale-95 group"
-                  >
-                    <MapPin size={22} className="group-hover:animate-bounce transition-all" /> 
-                    <span>Lihat Rute di Google Maps</span>
-                  </motion.a>
-
-                  <p className="text-xs text-slate-500 italic">
-                    Yuk Bun, cobain rasa Selai Kurma Alunna yang kid-approved!
-                  </p>
-                </div>
-              </div>
+              <h2 className="text-3xl font-bold text-slate-800 mb-2">Sedikit Lagi, Bun!</h2>
+              <p className="text-slate-600">
+                Isi data diri Bunda untuk melihat hasil kuis dan tips spesial dari kami.
+              </p>
             </div>
+
+            <form onSubmit={handleFormSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 ml-1">Nama Lengkap Bunda</label>
+                <input 
+                  required
+                  type="text" 
+                  placeholder="Contoh: Bunda Shinta"
+                  className="w-full p-4 rounded-2xl border-2 border-brand-rose/30 focus:border-brand-peach focus:ring-4 focus:ring-brand-peach/10 outline-none transition-all"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 ml-1">No. WhatsApp Bunda</label>
+                <input 
+                  required
+                  type="tel" 
+                  placeholder="Contoh: 0812xxxx"
+                  className="w-full p-4 rounded-2xl border-2 border-brand-rose/30 focus:border-brand-peach focus:ring-4 focus:ring-brand-peach/10 outline-none transition-all"
+                  value={formData.wa}
+                  onChange={(e) => setFormData({ ...formData, wa: e.target.value })}
+                />
+              </div>
+              
+              <button 
+                type="submit"
+                className="primary-btn !bg-brand-peach w-full text-lg py-4 shadow-xl flex items-center justify-center gap-2 group"
+              >
+                Lihat Hasil Saya <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </form>
+            
+            <p className="mt-6 text-center text-xs text-slate-400">
+              Tenang Bun, data Bunda aman bersama kami.
+            </p>
           </motion.div>
+        )}
+
+        {gameState === 'result' && (
+          <div className="w-full flex flex-col items-center">
+            {/* Promo Popup */}
+            <AnimatePresence>
+              {isPopupOpen && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                >
+                  <motion.div
+                    initial={{ scale: 0.5, y: 100 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.5, y: 100 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    className="bg-white rounded-[40px] p-8 md:p-10 max-w-md w-full text-center relative border-8 border-brand-rose/20 shadow-2xl"
+                  >
+                    <button 
+                      onClick={() => setIsPopupOpen(false)}
+                      className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full transition-colors"
+                    >
+                      <XCircle className="text-slate-300 hover:text-slate-500" size={32} />
+                    </button>
+
+                    <div className="bg-brand-rose/30 inline-flex p-4 rounded-full mb-6">
+                      <Sparkles className="text-brand-peach w-10 h-10" />
+                    </div>
+
+                    <h3 className="text-2xl md:text-3xl font-black text-slate-800 mb-2">🎁 KLAIM PROMO BUNDA!</h3>
+                    <div className="text-5xl font-black text-brand-peach mb-4 flex items-center justify-center gap-1">
+                      50% <span className="text-xl text-slate-400">OFF</span>
+                    </div>
+                    
+                    <p className="text-slate-600 mb-8 leading-relaxed">
+                      Dapatkan diskon spesial untuk si Kecil dengan minimum pembelian <strong>Rp 150.000</strong>.
+                    </p>
+
+                    <motion.button
+                       whileHover={{ scale: 1.05 }}
+                       whileTap={{ scale: 0.95 }}
+                       onClick={() => setIsPopupOpen(false)}
+                       className="primary-btn w-full !bg-brand-peach text-xl py-4 shadow-orange-200 shadow-lg"
+                    >
+                      AMBIL PROMONYA SEKARANG
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="glass-card max-w-3xl w-full p-8 md:p-12 text-center"
+            >
+              <div className="relative inline-block mb-6">
+                 <div className="absolute -inset-4 bg-brand-rose/30 blur-2xl rounded-full" />
+                 <div className="relative bg-white rounded-full p-6 shadow-xl border-4 border-brand-apricot">
+                    <Heart className="w-16 h-16 text-brand-peach animate-pulse fill-brand-peach" />
+                 </div>
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4 px-4">
+                Bunda {formData.name || ''}... Tarik Napas Dulu... <br/> Kamu Ibu yang Hebat! ❤️
+              </h2>
+              
+              <div className="text-left space-y-6 mb-10 text-slate-700 leading-relaxed">
+                <p className="bg-brand-mint/30 p-6 rounded-3xl border-2 border-brand-mint italic">
+                  "Dari jawaban Bunda, kami tahu betul bahwa menghadapi anak GTM itu sangat menguras fisik dan emosi. 
+                  Perasaan sedih, khawatir BB anak seret, hingga takut nutrisinya tidak tercukupi adalah hal yang sangat wajar. 
+                  Bunda tidak sendirian, dan Bunda berhak mendapatkan bantuan yang tepat."
+                </p>
+
+                <p>
+                  GTM sering kali terjadi karena anak bosan, tumbuh gigi, atau butuh eksplorasi rasa baru yang enak namun tetap padat gizi. 
+                  Jangan biarkan stres ini berlarut-larut ya, Bun!
+                </p>
+
+                <div className="glass-card p-6 border-brand-apricot border-2 bg-brand-cream/50 overflow-hidden">
+                  <h3 className="text-xl font-bold text-brand-peach flex items-center gap-2 mb-4">
+                    <Sparkles size={24} /> Kami Punya Solusi Tepat:
+                  </h3>
+                  
+                  <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border-2 border-white">
+                    <img 
+                      src="https://alunna.id/wp-content/uploads/2026/04/selai-kurma-variant.webp" 
+                      alt="Selai Kurma Alunna Variant" 
+                      referrerPolicy="no-referrer"
+                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+
+                  <p className="mb-4">
+                    Kenalkan, <strong>Selai Kurma MPASI dari Alunna!</strong> Terbuat dari bahan alami yang manisnya pas, lezat, dan bernutrisi tinggi untuk bantu boost nafsu makan dan lengkapi gizi si Kecil.
+                  </p>
+                  
+                  <div className="bg-white p-6 rounded-2xl border-l-4 border-brand-peach shadow-sm">
+                    <h4 className="font-bold text-brand-peach mb-2 uppercase text-sm tracking-wide">🎁 SPESIAL UNTUK BUNDA HARI INI:</h4>
+                    <p className="mb-4 text-sm md:text-base">
+                      Berhenti tebak-tebakan sendiri! Dapatkan <strong>KONSULTASI GRATIS</strong> bersama Spesialis Gizi Kami sekarang juga. 
+                    </p>
+                    <motion.a 
+                      onClick={handleWaClick}
+                      animate={{ rotate: [-1.5, 1.5, -1.5], scale: [1, 1.03, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      href="https://wa.me/6282323360606?text=Halo%20Alunna,%20saya%20mau%20konsultasi%20gratis%20soal%20GTM%20si%20kecil" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold p-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3 no-underline leading-tight"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current flex-shrink-0" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                      <span className="text-left text-sm md:text-base">
+                        CHAT WA <br/> KLAIM KONSULTASI GRATIS
+                      </span>
+                    </motion.a>
+                  </div>
+                </div>
+
+                <div className="bg-brand-rose/20 p-6 rounded-3xl border-2 border-brand-rose/30">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2 mb-3">
+                    <Utensils size={20} className="text-brand-peach" /> Mampir ke Booth Kami, Bun!
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="text-sm md:text-base space-y-1">
+                      <p>📍 <strong>IKEA Garden City, Jakarta Timur</strong></p>
+                      <p>📅 <strong>Hanya Sampai 28 Mei</strong></p>
+                    </div>
+                    
+                    <motion.a 
+                      animate={{ rotate: [1.5, -1.5, 1.5], scale: [1, 1.03, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                      href="https://www.google.com/maps/place/IKEA+Jakarta+Garden+City/@-6.1710064,106.9532439,17z/data=!3m1!4b1!4m6!3m5!1s0x2e698b4589e3470f:0x1b65d1f70f636ba3!8m2!3d-6.1710064!4d106.9532439!16s%2Fg%2F11mvlq08tz?entry=ttu&g_ep=EgoyMDI2MDUwMi4wIKXMDSoASAFQAw%3D%3D"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-3 bg-emerald-800 hover:bg-emerald-900 hover:scale-[1.02] text-white font-bold py-4 rounded-2xl no-underline transition-all shadow-md active:scale-95 group"
+                    >
+                      <MapPin size={22} className="group-hover:animate-bounce transition-all" /> 
+                      <span>Lihat Rute di Google Maps</span>
+                    </motion.a>
+
+                    <p className="text-xs text-slate-500 italic text-center">
+                      Yuk Bun, cobain rasa Selai Kurma Alunna yang kid-approved!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
